@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: alfa-core
+Version: 0.1.0
+Summary: ALFA-CORE backend kernel: routing, safety, and local model integrations.
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: fastapi>=0.115.0
+Requires-Dist: uvicorn>=0.30.0
+Requires-Dist: pydantic>=2.8.0
+Dynamic: license-file
+
+# MUILTYAGENT-LOCALKOM-PUTER
+GPT CLOUDE RUN YOUR COMPUTER

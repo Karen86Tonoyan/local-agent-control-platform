@@ -1,0 +1,10 @@
+{
+  "name": "alfa-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Workspace metadata for ALFA-CORE integrations",
+  "scripts": {
+    "lint": "echo 'Use Python linters from scripts/lint.ps1'",
+    "test": "echo 'Use scripts/test.ps1'"
+  }
+}
