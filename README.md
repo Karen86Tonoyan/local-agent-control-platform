@@ -1,60 +1,58 @@
-# ALFA-CORE
+# ALFA Core
 
-> **Status: canonical migration in progress.**
-> Core Python backend is the source of truth. Legacy TypeScript `src/` is in compatibility-only mode — no new domain logic added there.
+> **Experimental local Python kernel for routing, policy checks, model clients and audit envelopes**
 
-ALFA-CORE is the backend kernel for the ALFA system: decision routing, safety guardrails, local LLM integration, and audit telemetry.
-
-## What works now
-
-- `GET /health` — liveness check
-- `POST /route` — routes a prompt through router + safety policy, returns `AnswerEnvelope`
-- `POST /ask` — routes prompt, calls Ollama, returns `AnswerEnvelope`
-- Operator CLI: `bootstrap`, `smoke`, `doctor`
-- 57 passing unit tests (router, safety, ollama_client, audit, API contract)
-
-## Response contract (all endpoints)
-
-```json
-{
-  "request_id": "uuid",
-  "mode": "route|ask|explain|find-bug|next-step",
-  "decision": "ACCEPT|VERIFY|SIMULATE|ESCALATE|BLOCK",
-  "answer": "string or null",
-  "citations": [],
-  "warnings": [],
-  "error": "string or null"
-}
-```
-
-`warnings` is always a list. `error` is always present, `null` on success.
-
-## Quickstart
-
-```bash
-python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -e .
-
-# operator checks
-python -m apps.cli bootstrap
-python -m apps.cli doctor
-
-# run API
-python -m apps.api
-```
-
-## Repo policy
-
-- One canonical repo. No `-new`, `-v2`, `-final-final` copies.
-- Experiments go to `labs/` or a branch only.
-- `.venv/` and archives are not committed.
-- New domain logic goes to `packages/` (Python) only.
+ALFA Core is organised as a Python package with separate API, CLI and chat
+entry points. It exposes a small FastAPI service and contains modules for
+routing, safety policy, model controllers, command execution, sensors, memory
+and audit telemetry.
 
 ## Architecture
 
-```
-Input → Router → Safety → LLM → Output
+```text
+apps/api/             FastAPI application and module entry point
+apps/cli/, apps/chat/ command-line entry points
+packages/router/      prompt routing
+packages/safety/      policy handling
+packages/llm/         Ollama, OpenAI and Claude client modules
+packages/telemetry/   audit support
+packages/sensors/     camera, screen, audio and voice-policy abstractions
+tests/unit/           unit tests for contracts and policy
 ```
 
-See `docs/architecture.md`, `docs/routing.md`, `docs/safety-model.md`, `docs/threat-model.md`.
+## Requirements and startup
+
+Python 3.11+ is required. The declared dependencies are FastAPI, Uvicorn and
+Pydantic:
+
+```bash
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+# macOS/Linux: source .venv/bin/activate
+python -m pip install -e .
+python -m apps.api
+```
+
+The API entry point starts Uvicorn on port 8000. The project also includes
+PowerShell scripts in `scripts/` for bootstrap, development, lint and test
+tasks.
+
+## Configuration
+
+`.env.example` documents local Ollama settings, audit location, command
+whitelist, optional OpenAI/Anthropic settings and voice-policy settings. Copy
+it to a local `.env`, replace only needed placeholders and keep all credentials
+out of Git. Review the command whitelist and confirmation flags before
+enabling execution-related code.
+
+## Status and safety
+
+The repository is in a canonical-migration phase according to its existing
+documentation. Sensors, model calls and command pathways must be explicitly
+configured and tested. Policy decisions and audit records are development
+features; they do not guarantee safe execution or protect against all harmful
+input.
+
+## Licence
+
+`LICENSE` is MIT.
